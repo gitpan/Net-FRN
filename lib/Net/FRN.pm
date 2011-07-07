@@ -51,7 +51,7 @@ use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
     FRN_RESULT_WRONG
 );
 
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 sub client {
     my $class = shift;
@@ -296,7 +296,7 @@ Client description structure:
         BC  => FRN_TYPE_PC_ONLY,
         ON  => 'Callsign, Name',
         ID  => 11,
-        SMS => ''
+        DS  => ''
     }
 
 =back
@@ -373,7 +373,55 @@ onGSM
 
 onPCM
 
+=item *
 
+onBanList(\@banList)
+
+onBanList() is called every time the list of banned clients received from server.
+
+=over
+
+=item $_[0]
+
+Reference to array of banned client description records.
+
+Banned client description structure:
+
+    {
+        AI  => 'ADMIN, Administrator';
+        NN  => 'Country',
+        CT  => 'City - QTH',
+        BC  => FRN_TYPE_PC_ONLY,
+        ON  => 'Callsign, Name',
+        ID  => '192.168.0.1',
+    }
+
+=back
+
+=item *
+
+onMuteList(\@muteList)
+
+onMuteList() is called every time the list of muted clients received from server.
+
+=over
+
+=item $_[0]
+
+Reference to array of muted client description records.
+
+Muted client description structure:
+
+    {
+        AI  => 'ADMIN, Administrator';
+        NN  => 'Country',
+        CT  => 'City - QTH',
+        BC  => FRN_TYPE_PC_ONLY,
+        ON  => 'Callsign, Name',
+        ID  => '192.168.0.1',
+    }
+
+=back
 
 =back
 

@@ -27,7 +27,7 @@ use vars qw(@EXPORT_OK @EXPORT);
 
 @EXPORT = @EXPORT_OK;
 
-use constant FRN_PROTO_VERSION  => 2009003;
+use constant FRN_PROTO_VERSION  => 2010002;
 
 use constant FRN_TYPE_PC_ONLY   => 'PC Only';
 use constant FRN_TYPE_CROSSLINK => 'Crosslink';
