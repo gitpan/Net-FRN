@@ -110,12 +110,12 @@ WARN
         _select        => new IO::Select,
         _gsm           => $gsm,
         _VX            => FRN_PROTO_VERSION,
-        _ON            => $arg{Name},
+        _ON            => sprintf("%s, %s", $arg{Callsign}, $arg{Name}),
         _EA            => $arg{Email},
         _PW            => $arg{Password},
         _NT            => $arg{Net},
         _NN            => $arg{Country} || 'N/A',
-        _CT            => $arg{City} || 'N/A - N/A',
+        _CT            => sprintf("%s - %s", $arg{City} || 'N/A', $arg{Locator} || 'N/A'),
         _BC            => $arg{Type} || FRN_TYPE_PC_ONLY,
         _BN            => undef,
         _BP            => undef,
@@ -173,6 +173,7 @@ WARN
         _ptt           => PTT_UP,
         _msgKey        => $arg{MessageKey},
         _rxExFlag      => 0,
+        _reconnectTimeout   => 10,
     };
     bless($self, $class);
     return $self;
@@ -516,6 +517,7 @@ sub _parse {
         if ($self->{_callback}{onPTTUp}) {
             &{$self->{_callback}{onPTTUp}}();
         }
+        while (ReadKey(-1)) {};
         $self->{_state} = STATE_TX_COMPLETE;
         #$self->{_state} = STATE_IDLE;
         
@@ -570,7 +572,9 @@ sub _parse {
         $self->{_state} = STATE_IDLE;
     } elsif ($self->{_state} == STATE_MESSAGE_INPUT) {
         if ($self->{_callback}{onMessageInput}) {
+            ReadMode('normal');
             $self->{_msgbuffer} = &{$self->{_callback}{onMessageInput}}();
+            ReadMode('raw');
             $self->{_state} = STATE_MESSAGE_SEND;
         } else {
             warn "No message source. Define onMessageInput() handler.\n";
@@ -584,9 +588,9 @@ sub _parse {
             if (($ptt & PTT_DOWN) && ($ptt & PTT_CHANGED)) {
                 $self->{_state} = STATE_PTT_DOWN;
                 return;
-            } elsif (!($ptt & PTT_DOWN) && ($ptt & PTT_CHANGED)) {
-                $self->{_state} = STATE_PTT_UP;
-                return;
+            #} elsif (!($ptt & PTT_DOWN) && ($ptt & PTT_CHANGED)) {
+            #    $self->{_state} = STATE_PTT_UP;
+            #    return;
             } elsif ($ptt & PTT_EXIT) {
                 $self->{_state} = STATE_ABORT;
                 return;
@@ -658,7 +662,11 @@ sub _connect {
         LocalAddr => $self->{_LocalAddr},
         Proto     => 'tcp',
         Timeout   => 30,
-    ) or return undef;
+    );
+    unless ($self->{_socket}) {
+        select(undef, undef, undef, $self->{_reconnectTimeout});
+        return undef;
+    }
     $self->{_select}->add($self->{_socket});
     $self->{_socket}->blocking(0);
     $self->{_socket}->autoflush(1);

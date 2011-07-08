@@ -51,7 +51,7 @@ use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
     FRN_RESULT_WRONG
 );
 
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 sub client {
     my $class = shift;
@@ -100,7 +100,7 @@ __END__
 
 =head1 NAME
 
-Net::FRN::Client - Perl interface to Free Radio Network protocol.
+Net::FRN - Perl interface to Free Radio Network protocol.
 
 =head1 SYNOPSYS
 
@@ -109,13 +109,15 @@ Net::FRN::Client - Perl interface to Free Radio Network protocol.
     my $client = Net::FRN->client (
         Host     => '01server.lpdnet.ru',
         Port     => 10026,
-        Name     => 'SP513, Alexander',
+        Callsign => 'SP513',
+        Name     => 'Alexander',
         Email    => 'sp513@example.org',
         Password => 'MYPASSWD',
         Net      => 'Russia',
         Type     => FRN_TYPE_CROSSLINK,
         Country  => 'Russian Federation',
-        City     => 'St-Petersburg - KP50FA'
+        City     => 'St-Petersburg',
+        Locator  => 'KP50FA'
     );
 
     $client->run;
@@ -168,13 +170,15 @@ Not yet implemented.
     my $client = Net::FRN->client(
         Host     => '01server.lpdnet.ru',
         Port     => 10026,
-        Name     => 'SP513, Alexander',
+        Callsign => 'SP513',
+        Name     => 'Alexander',
         Email    => 'sp513@example.org',
         Password => 'MYPASSWD',
         Net      => 'Russia',
         Type     => FRN_TYPE_CROSSLINK,
         Country  => 'Russian Federation',
-        City     => 'St-Petersburg - KP50FA'
+        City     => 'St-Petersburg',
+        Locator  => 'KP50FA'
     );
 
 Acceptable parameters for client() are:
@@ -197,10 +201,13 @@ Port numer which FRN server listens on.
 
 Name
 
-Callsign and operator's name separated by ``, ''.
+Operator's real name
 
-NOTE: this parameter is subject to change. It should be split in two separate
-parameters Callsign and Name.
+=item *
+
+Callsign
+
+Operator's callsign
 
 =item *
 
@@ -237,10 +244,13 @@ Country name.
 
 City
 
-City and part of the city (or QTH-locator), separated by `` - ''.
+City where operator is located
 
-NOTE: this parameter is subject to change. It should be split into two separate
-parameters City and QTH.
+=item *
+
+Locator
+
+Part of the city or QTH-locator
 
 =back
 
